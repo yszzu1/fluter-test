@@ -39,7 +39,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     setState(() {
       _counter++;
-      FFmpegKitConfig.selectDocumentForWrite('video.mp4', 'video/*')
+      var timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      print(timestamp);
+      FFmpegKitConfig.selectDocumentForWrite(
+              'video' + timestamp + '.mp4', 'video/*')
           .then((uri) {
         FFmpegKitConfig.getSafParameterForWrite(uri!).then((safUrl) {
           FFmpegKit.executeAsync("-i http://192.168.3.34:81/stream ${safUrl}");
