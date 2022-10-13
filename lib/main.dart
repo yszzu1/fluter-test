@@ -36,17 +36,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  String _ipAndPort = '192.168.3.34:81';
+
+  void _startFFMpegSession() {
     setState(() {
       _counter++;
-      var timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      print(timestamp);
-      FFmpegKitConfig.selectDocumentForWrite(
-              'video' + timestamp + '.mp4', 'video/*')
-          .then((uri) {
-        FFmpegKitConfig.getSafParameterForWrite(uri!).then((safUrl) {
-          FFmpegKit.executeAsync("-i http://192.168.3.34:81/stream ${safUrl}");
-        });
+    });
+    var timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    print(timestamp);
+    FFmpegKitConfig.selectDocumentForWrite(
+            'video' + timestamp + '.mp4', 'video/*')
+        .then((uri) {
+      FFmpegKitConfig.getSafParameterForWrite(uri!).then((safUrl) {
+        FFmpegKit.executeAsync("-i http://" + _ipAndPort + "/stream ${safUrl}");
       });
     });
   }
@@ -73,26 +75,41 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FloatingActionButton(
+                  onPressed: _startFFMpegSession,
+                  tooltip: 'startSession',
+                  child: const Icon(Icons.add),
+                ),
+                SizedBox(
+                  width: 30,
+                ),
+                FloatingActionButton(
                   onPressed: _closeFFMpegSession,
                   tooltip: 'CloseSession',
                   child: const Icon(Icons.add_alert),
                 )
               ],
             ),
-            const Text(
-              'You have pushed the button this many times:',
+            SizedBox(
+              height: 20,
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              'You have pushed the button this many times:' + '$_counter',
             ),
+            TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Ip:Port',
+              ),
+              onSubmitted: (txt) {
+                setState(() {
+                  _ipAndPort = txt;
+                  print(_ipAndPort);
+                });
+              },
+            ),
+            Text('current ip port $_ipAndPort')
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
