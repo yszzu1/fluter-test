@@ -38,14 +38,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _ipAndPort = '192.168.3.34:81';
 
+  String _format_to_yyyymmddHHMM(DateTime dd) {
+    var year = dd.year;
+    var month = dd.month;
+    var day = dd.day;
+    var hh = dd.hour;
+    var mm = dd.minute;
+    return "$year$month$day$hh$mm";
+  }
+
   void _startFFMpegSession() {
     setState(() {
       _counter++;
     });
-    var timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    print(timestamp);
-    FFmpegKitConfig.selectDocumentForWrite(
-            'video' + timestamp + '.mp4', 'video/*')
+    var timestamp = _format_to_yyyymmddHHMM(DateTime.now());
+    FFmpegKitConfig.selectDocumentForWrite('video$timestamp.mp4', 'video/*')
         .then((uri) {
       FFmpegKitConfig.getSafParameterForWrite(uri!).then((safUrl) {
         FFmpegKit.executeAsync("-i http://" + _ipAndPort + "/stream ${safUrl}");
